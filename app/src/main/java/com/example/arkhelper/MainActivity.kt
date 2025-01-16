@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -67,7 +68,9 @@ import com.example.arkhelper.ui.Creature
 import com.example.arkhelper.ui.Description
 import com.example.arkhelper.ui.DetailedCreatureCard
 import com.example.arkhelper.ui.KnockoutCalculatorscreen
-import com.example.arkhelper.ui.creatures
+
+import com.example.arkhelper.ui.SettingsScreen
+
 import com.example.arkhelper.ui.theme.ArkHelperTheme
 import kotlinx.coroutines.launch
 
@@ -75,16 +78,12 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        val viewModel by viewModels<CreatureViewModel>()
         setContent {
             ArkHelperTheme {
-                //DetailedCreatureCard(Creature("Rex","Rex is a king of dinosaurs in ark",R.drawable.rexdosier,R.drawable.rexdefault,
-                  // Description("Dossier Text","Behaviour text","Taming text") ) )
-               //ArkWikiScreen()
-                NavigationController();
-
+                NavigationController(viewModel);
             }
         }
     }
 }
-

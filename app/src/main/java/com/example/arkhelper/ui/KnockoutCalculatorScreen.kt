@@ -46,13 +46,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
+import com.example.arkhelper.CreatureViewModel
 import com.example.arkhelper.R
 import com.example.arkhelper.Routes
 import kotlinx.coroutines.launch
 
 
 @Composable
-fun KnockoutCalculatorscreen(navigation:NavController) {
+fun KnockoutCalculatorscreen(viewModel: CreatureViewModel, navigation:NavController) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     ModalNavigationDrawer(
@@ -75,9 +77,15 @@ fun KnockoutCalculatorscreen(navigation:NavController) {
                 )
                 HorizontalDivider()
                 NavigationDrawerItem(
+                    label = { Text(text = "Stats Calculator") },
+                    selected = false,
+                    onClick = { navigation.navigate(route = Routes.SCREEN_STATS_CALCULATOR)}
+                )
+                HorizontalDivider()
+                NavigationDrawerItem(
                     label = { Text(text = "Server Settings") },
                     selected = false,
-                    onClick = { /*TODO*/ }
+                    onClick = { navigation.navigate(route = Routes.SCREEN_SERVER_SETTINGS) }
                 )
             }
         },
@@ -126,20 +134,19 @@ fun KnockoutCalculatorscreen(navigation:NavController) {
             Text(modifier = Modifier.padding(17.dp), text ="This calculator is used to determine how much ammo you need to prepare to knock out a certain creature")
 
             var selectedCreature by remember { mutableStateOf<Creature?>(null) }
-            CreatureDropdownMenu(creatures,onCreatureSelected = { selectedCreature = it })
+            CreatureDropdownMenu(viewModel.creatureData,onCreatureSelected = { selectedCreature = it })
 
             var level by remember { mutableStateOf("") }
             CreatureLevelInput(level=level,onLevelChange = { level = it })
             var selectedWeapon by remember{ mutableStateOf<Weapon?>(null) }
-            WeaponDropdownMenu(weapons, onWeaponSelected = { selectedWeapon=it})
+            WeaponDropdownMenu(viewModel.weaponData, onWeaponSelected = { selectedWeapon=it})
 
             var quality by remember { mutableStateOf("") }
             WeaponQualityInput(quality = quality, onQualityChange = {quality=it})
 
             var knockoutValue by remember { mutableStateOf<Long>(0) }
-            CalculateButton(selectedCreature,level,selectedWeapon,quality,onCalculate = { result ->
+            CalculateButton(viewModel,selectedCreature,level,selectedWeapon,quality,onCalculate = { result ->
                 knockoutValue = result
-                println("Knockout Value: $result")
             })
             knockoutValue?.let {
                 Text(text = "You will need ${it} ${selectedWeapon?.name?:"weapon"} ammo to knockout level ${level} ${selectedCreature?.name?:"creature"}", style = MaterialTheme.typography.bodyLarge)
@@ -159,12 +166,12 @@ fun CreatureDropdownMenu(creatures: List<Creature>, onCreatureSelected: (Creatur
     var selectedCreature by remember { mutableStateOf<Creature?>(null) }
 
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-        // Dropdown menu box
+
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = !expanded }
         ) {
-            // Text field that triggers the dropdown
+
             OutlinedTextField(
                 readOnly = true,
                 value = selectedCreature?.name ?: "Select a Creature",
@@ -178,29 +185,27 @@ fun CreatureDropdownMenu(creatures: List<Creature>, onCreatureSelected: (Creatur
                 },
                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
             )
-            // Dropdown menu
+
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
                 creatures.forEach { creature ->
                     DropdownMenuItem(
-                        leadingIcon = {Image(painter = painterResource(id = creature.dossierImg), contentDescription = null)},
+                        leadingIcon = {Image(painter = rememberAsyncImagePainter(model= creature.dossierImg), contentDescription = null)},
                         text = { Text(creature.name) },
                         onClick = {
                             selectedCreature = creature
                             expanded = false
-                            onCreatureSelected(creature) // Notify parent of the selection
+                            onCreatureSelected(creature)
                         }
                     )
                 }
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
-        // Display selected creature details (optional)
-        selectedCreature?.let { creature ->
 
-        }
+
     }
 }
 
@@ -234,12 +239,12 @@ fun WeaponDropdownMenu(weapons: List<Weapon>, onWeaponSelected: (Weapon) -> Unit
     var selectedWeapon by remember { mutableStateOf<Weapon?>(null) }
 
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-        // Dropdown menu box
+
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = !expanded }
         ) {
-            // Text field that triggers the dropdown
+
             OutlinedTextField(
                 readOnly = true,
                 value = selectedWeapon?.name ?: "Select a Weapon",
@@ -260,22 +265,19 @@ fun WeaponDropdownMenu(weapons: List<Weapon>, onWeaponSelected: (Weapon) -> Unit
             ) {
                 weapons.forEach { weapon ->
                     DropdownMenuItem(
-                        leadingIcon = {Image(painter = painterResource(id = weapon.image), contentDescription = null)},
+                        leadingIcon = {Image(painter = rememberAsyncImagePainter(model=weapon.image), contentDescription = null)},
                         text = { Text(weapon.name) },
                         onClick = {
                             selectedWeapon = weapon
                             expanded = false
-                            onWeaponSelected(weapon) // Notify parent of the selection
+                            onWeaponSelected(weapon)
                         }
                     )
                 }
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
-        // Display selected creature details (optional)
-        selectedWeapon?.let { weapon->
 
-        }
     }
 }
 
@@ -303,6 +305,7 @@ fun WeaponQualityInput(
 
 @Composable
 fun CalculateButton(
+    viewModel: CreatureViewModel,
     creature: Creature?,
     level: String,
     weapon:Weapon?,
@@ -316,7 +319,7 @@ fun CalculateButton(
             if (creature != null && level.toIntOrNull() != null && weapon!=null && quality.toIntOrNull()!=null) {
 
 
-                val knockoutValue=CalculateKnockoutValue(creature,level.toInt(),weapon,quality.toInt())
+                val knockoutValue=CalculateKnockoutValue(viewModel,creature,level.toInt(),weapon,quality.toInt())
                 onCalculate(knockoutValue)
             }
 
@@ -335,11 +338,11 @@ fun CalculateButton(
 
 
 
-fun CalculateKnockoutValue(creature:Creature,level:Int,weapon:Weapon,quality:Int):Long{
+fun CalculateKnockoutValue(viewModel: CreatureViewModel,creature:Creature,level:Int,weapon:Weapon,quality:Int):Long{
 
-    val result=(creature.toporPerLevel*level).toLong()/(weapon.toporPerHit*(quality.toLong()/100).toLong())
+    val result=((creature.basetopor+(creature.toporPerLevel*level))*viewModel.settings.first().torporSetting.toFloat())/(weapon.toporPerHit*(quality.toFloat()/100))
 
-    return result
+    return result.toLong()
 
 
 }

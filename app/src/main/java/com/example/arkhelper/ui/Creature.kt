@@ -4,39 +4,53 @@ import androidx.annotation.DrawableRes
 import com.example.arkhelper.R
 
 data class Creature(
-    val name:String,
+    val name:String="",
     val shortDescription:String="",
-    @DrawableRes val dossierImg:Int,
-    @DrawableRes val image: Int,
-    val description:Description,
-    val toporPerLevel:Int
+    val dossierImg:String="",
+    val image: String="",
+    val description:Description=Description(),
+    val toporPerLevel:Float=0f,
+    val statsperlevel:StatsPerLevel=StatsPerLevel(),
+    val basetopor:Int=600,
+    val baseStats: BaseStats=BaseStats(),
+    var id: String = ""
 )
+data class StatsPerLevel(
+    val health:Float=0f,
+    val stamina:Float=0f,
+    val oxygen:Float=0f,
+    val food:Float=0f,
+    val weight:Float=0f,
+    val damage:Float=0f)
 
-data class Description(val dossier:String,val behaviour:String,val taming:String)
-
-val creatures: List<Creature> = listOf(
-
-    Creature("Rex", shortDescription = "This is the king of dinosaurs in ark",R.drawable.rexdosier,R.drawable.rexdefault,
-        Description("Dossier Text","Behaviour text","Taming text"),230
-    ),
-    Creature("Triceratops", shortDescription = "This is the a reliable herbivore in ark",R.drawable.trikedosier,R.drawable.triceratopsdefault,
-        Description("Dossier Text","Behaviour text","Taming text"),150),
-    Creature("Pteranodon", shortDescription = "This is best early flying dinosaurs in ark",R.drawable.pteranodondosier,R.drawable.rexdefault,
-        Description("Dossier Text","Behaviour text","Taming text"),80)
-)
-
-
+data class Description(
+    val dossier:String="hmm",
+    val behaviour:String="hmm2",
+    val taming:String="hmmm3")
 
 data class Weapon(
-    val name:String,
-    @DrawableRes val image:Int,
-    val toporPerHit:Int
+    val name:String="",
+    val image:String="",
+    val toporPerHit:Int=0,
+    var id:String=""
+)
+data class BaseStats(
+    val health:Float=0f,
+    val stamina:Float=0f,
+    val oxygen:Float=0f,
+    val food:Float=0f,
+    val weight:Float=0f,
+    val damage:Float=0f
 )
 
-
-val weapons: List<Weapon> = listOf(
-    Weapon("Crossbow",R.drawable.crossbowimg,123),
-    Weapon("Bow",R.drawable.crossbowimg,123),
-    Weapon("Rifle",R.drawable.crossbowimg,123)
-
+data class Setting(
+    var torporSetting: String="",
+    var healthSetting: String="",
+    var staminaSetting: String="",
+    var oxygenSetting: String="",
+    var foodSetting: String="",
+    var weightSetting: String="",
+    var damageSetting: String="",
+    var id:String=""
 )
+

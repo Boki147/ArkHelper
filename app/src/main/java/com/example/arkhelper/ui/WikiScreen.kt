@@ -36,6 +36,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -67,16 +68,19 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
+import com.example.arkhelper.CreatureViewModel
 import com.example.arkhelper.Routes
 import com.example.arkhelper.ui.Creature
-import com.example.arkhelper.ui.creatures
+
 import com.example.arkhelper.ui.theme.ArkHelperTheme
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ArkWikiScreen(navigation: NavController) {
+fun ArkWikiScreen(viewModel: CreatureViewModel,navigation: NavController) {
 
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -101,9 +105,15 @@ fun ArkWikiScreen(navigation: NavController) {
                 )
                 HorizontalDivider()
                 NavigationDrawerItem(
+                    label = { Text(text = "Stats Calculator") },
+                    selected = false,
+                    onClick = { navigation.navigate(route = Routes.SCREEN_STATS_CALCULATOR) }
+                )
+                HorizontalDivider()
+                NavigationDrawerItem(
                     label = { Text(text = "Server Settings") },
                     selected = false,
-                    onClick = { /*TODO*/ }
+                    onClick = { navigation.navigate(route = Routes.SCREEN_SERVER_SETTINGS) }
                 )
             }
         },
@@ -138,9 +148,12 @@ fun ArkWikiScreen(navigation: NavController) {
                 text = "Ark Helper",
                 style = TextStyle(fontSize = 25.sp, color = MaterialTheme.colorScheme.onSurface)
             )
+            Spacer(Modifier.height(20.dp))
+            HorizontalDivider()
+
             var inputState by remember { mutableStateOf("") } //searchbar na koji način radi
             var filteredCreatures: List<Creature> = mutableListOf()
-            for (onecreature in creatures) {
+            for (onecreature in viewModel.creatureData) {
                 if (remember(inputState) {
                         onecreature.name.contains(
                             inputState,
@@ -168,7 +181,7 @@ fun ArkWikiScreen(navigation: NavController) {
 }
 
 @Composable
-fun CreatureList(creatures: List<Creature>,navigation: NavController) {
+fun CreatureList(creatures:List<Creature>,navigation: NavController) {
     if (creatures.isEmpty()) {
         Text("No creatures found", style = TextStyle(fontSize = 16.sp, color = Color.Gray))
     } else {
@@ -194,7 +207,7 @@ fun CreatureList(creatures: List<Creature>,navigation: NavController) {
 
 
 @Composable
-fun CreatureCard(creatureName:String, @DrawableRes dossier :Int,
+fun CreatureCard(creatureName:String, dossier :String,
                  shortDescription:String,onClick: () -> Unit
 ) {
     Card(
@@ -207,14 +220,14 @@ fun CreatureCard(creatureName:String, @DrawableRes dossier :Int,
 
 
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically  ,
+        Row(verticalAlignment = Alignment.CenterVertically ,
             modifier = Modifier.padding(10.dp)  ) {
             Image(
-                painter = painterResource(dossier),
+                painter= rememberAsyncImagePainter(model = dossier),
                 contentDescription = "Ark Icon",
                 modifier = Modifier
                     .size(125.dp)
-                    .width(140.dp)
+                    .width(160.dp)
                     .padding(5.dp)
                 ,
                 contentScale = ContentScale.FillBounds

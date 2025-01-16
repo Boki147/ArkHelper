@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "76887518286",
+    "project_id": "arkhelper-d2f55",
+    "storage_bucket": "arkhelper-d2f55.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:76887518286:android:2b4463a76c556a9cdba71f",
+        "android_client_info": {
+          "package_name": "com.example.arkhelper"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiw4muZdRNDgrsujioYm_f-6lFLFqlkXc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

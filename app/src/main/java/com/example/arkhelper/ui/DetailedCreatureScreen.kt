@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -31,6 +33,8 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
+import com.example.arkhelper.CreatureViewModel
 import com.example.arkhelper.R
 import com.example.arkhelper.Routes
 import kotlinx.coroutines.launch
@@ -38,9 +42,10 @@ import kotlin.math.ceil
 
 
 @Composable
-fun DetailedCreatureCard(navigation:NavController,creatureId:Int) {
-    val creature = creatures[creatureId]
-    Column() {
+fun DetailedCreatureCard(viewModel: CreatureViewModel, navigation:NavController, creatureId:Int) {
+    val creature = viewModel.creatureData[creatureId]
+    val scrollState = rememberScrollState()
+    Column(modifier = Modifier.verticalScroll(scrollState)) {
          Row(horizontalArrangement = Arrangement.SpaceBetween) {
              Button( contentPadding = PaddingValues(),
                  onClick={navigation.navigate(Routes.SCREEN_ALL_CREATURES)},
@@ -65,18 +70,21 @@ fun DetailedCreatureCard(navigation:NavController,creatureId:Int) {
              style = TextStyle(fontSize = 25.sp, color = MaterialTheme.colorScheme.onSurface)
          )
         Text(text = creature.name, modifier = Modifier.align(Alignment.Start),style = TextStyle(fontSize = 50.sp, color = MaterialTheme.colorScheme.onSurface))
-         Image(painter = painterResource(creature.image), contentDescription =creature.name, modifier = Modifier.fillMaxWidth().padding(10.dp))
+         Image(painter = rememberAsyncImagePainter(model=creature.image ), contentDescription =creature.name, modifier = Modifier.width(500.dp).height(400.dp).padding(10.dp))
          Text(text="Dossier",style = TextStyle(fontSize = 30.sp))
+        Spacer(Modifier.height(20.dp))
          Text(text=creature.description.dossier)
          Spacer(Modifier.height(20.dp))
          HorizontalDivider()
          Spacer(Modifier.height(20.dp))
          Text(text="Behaviour",style = TextStyle(fontSize = 30.sp))
+        Spacer(Modifier.height(20.dp))
          Text(text=creature.description.behaviour)
          Spacer(Modifier.height(20.dp))
          HorizontalDivider()
          Spacer(Modifier.height(20.dp))
          Text(text="Taming",style = TextStyle(fontSize = 30.sp))
+        Spacer(Modifier.height(20.dp))
          Text(text=creature.description.taming)
     }
 
